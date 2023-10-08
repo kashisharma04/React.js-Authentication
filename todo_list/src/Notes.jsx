@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 function Notes() {
   // Initialize state for managing notes
   const [notes, setNotes] = useState([]);

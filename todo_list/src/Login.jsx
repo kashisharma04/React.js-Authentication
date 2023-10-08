@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import LogoutButton from './LogoutButton';
-
-
 export const Login = (props) => {
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
@@ -27,9 +25,9 @@ export const Login = (props) => {
       ) : (
         <form className="login-form" onSubmit={handleSubmit}>
           <label htmlFor="email">email</label>
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="youremail@gmail.com" id="email" name="email" />
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Enter your email address" id="email" name="email" />
           <label htmlFor="password">password</label>
-          <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="********" id="password" name="password" />
+          <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="Enter your password" id="password" name="password" />
           <button type="submit">Log In</button>
         </form>
       )}
