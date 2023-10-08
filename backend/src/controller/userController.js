@@ -1,7 +1,6 @@
 const userModel = require('../models/user')
 const jwt = require('jsonwebtoken')
 const { validateEmail,isValidReqBody } = require('../validation/valid')
-
 require('dotenv').config();
 const { JWT_SECRET} = process.env
 
@@ -27,6 +26,7 @@ const createUser = async function (req, res) {
 
         
         let userCreated = await userModel.create(user)
+        console.log(userCreated)
         return res.status(201).send({ status: true, data: userCreated })
     }
     catch (err) { return res.status(500).send({ status: false, message: err.message }) }
@@ -57,61 +57,55 @@ const login = async (req, res) => {
             });
             
         }
-
         const {
             email,
             password
         } = req.body
 
-        if (!validateEmail(email)) {
-            res.status(400).json({
-                status: false,
-                message: "Email is required"
-            })
-        }
-
-        if (!(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email))) {
-            res.status(400).json({
-                status: false,
-                message: "Email should be valid email."
-            })
-        }
-
         if (!email || !password) return res.status(400).json({
             message: "Please enter email and password"
         })
+        console.log(req.body)
+        if (!validateEmail(email)) {
+            res.status(400).json({
+                status: false,
+                message: "Email is not valid"
+            })
+        }
 
         const user = await userModel.findOne({
             email: email,
             password : password
         })
 
-
-        if (!user) return res.status(401).json({
+        if (!user){
+             return res.status(401).send({
             status: false,
-            message: 'You are not registered'
-        })
-        console.log(user.password)
-
-        if (password) {
-            const token = jwt.sign({
-                user_id: user._id,
-            }, JWT_SECRET)
-
-            res.header('x-header-key', token)
-
-            res.status(200).json({
-                status: true,
-                data: {
-                    token
-                }
-            })
-        } else {
-            return res.status(401).send({
-                status: false,
-                message: "not a authenticate user"
-            })
+            message: false
+        })}
+        else{
+            return res.status(200).send({status:true,message:true})
         }
+
+        // if (password) {
+        //     const token = jwt.sign({
+        //         user_id: user._id,
+        //     }, JWT_SECRET)
+
+        //     res.header('x-header-key', token)
+
+        //     res.status(200).json({
+        //         status: true,
+        //         data: {
+        //             token
+        //         }
+        //     })
+        // } else {
+        //     return res.status(401).send({
+        //         status: false,
+        //         message: "not a authenticate user"
+        //     })
+        // }
 
     } catch (error) {
         console.log(error)

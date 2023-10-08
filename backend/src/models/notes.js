@@ -11,11 +11,10 @@ const noteSchema = new mongoose.Schema({
     },
     color: {
         type : String,
-        enum : ['red' , 'orange', 'yellow', 'green', 'blue'],
         required : true
     },
 },{timestamps:true
 })
 
-module.exports = mongoose.model('User' , noteSchema);
+module.exports = mongoose.model('Notes' , noteSchema);
 
