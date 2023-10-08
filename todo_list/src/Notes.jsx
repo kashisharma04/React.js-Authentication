@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './notes.css'
+
 function Notes() {
   const [notes, setNotes] = useState([]);
   const [form, setForm] = useState({
@@ -7,6 +8,26 @@ function Notes() {
     body: "",
     color: "#ffffff"
   });
+  const [editMode, setEditMode] = useState(Array(notes.length).fill(false));
+
+  useEffect(() => {
+    // Fetch the initial list of notes when the component mounts
+    fetchNotes();
+  }, []);
+
+  const fetchNotes = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/getNotes");
+      if (response.ok) {
+        const data = await response.json();
+        setNotes(data.notes);
+      } else {
+        console.error("Error fetching notes");
+      }
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    }
+  };
 
   const addNote = async (e) => {
     e.preventDefault();
@@ -19,7 +40,7 @@ function Notes() {
         }
       });
 
-      if (response.status) {
+      if (response.ok) {
         const createdNote = await response.json();
         setNotes([...notes, createdNote]);
         setForm({
@@ -37,14 +58,47 @@ function Notes() {
     }
   };
 
-  // Function to edit a note
-  const editNote = (index) => {
-    // Implement your edit logic here
-    // For example, open a modal or provide input fields for editing
-    // Update the note in the notes state after editing
-    // const updatedNotes = [...notes];
-    // updatedNotes[index] = updatedNoteData;
-    // setNotes(updatedNotes);
+  const toggleEditMode = (index) => {
+    const updatedEditMode = [...editMode];
+    updatedEditMode[index] = !updatedEditMode[index];
+    setEditMode(updatedEditMode);
+  };
+
+  const updateNote = async (index) => {
+    const updatedNotes = [...notes];
+    const updatedNoteData = {
+      title: form.title,
+      body: form.body,
+      color: form.color,
+    };
+
+    try {
+      const response = await fetch(`http://localhost:8080/updateNote/${notes[index]._id}`, {
+        method: "PUT", // You can use PUT or PATCH based on your server's API
+        body: JSON.stringify(updatedNoteData),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (response.ok) {
+        const updatedNote = await response.json();
+        updatedNotes[index] = updatedNote;
+        setNotes(updatedNotes);
+        toggleEditMode(index);
+        setForm({
+          title: "",
+          body: "",
+          color: "#ffffff"
+        });
+      } else {
+        console.error("Error updating note");
+        // Handle error state or show error message to the user
+      }
+    } catch (error) {
+      console.error("Error updating note:", error);
+      // Handle error state or show error message to the user
+    }
   };
 
   return (
@@ -79,13 +133,38 @@ function Notes() {
         <div className="all-notes">
           {notes.map((note, index) => (
             <div
-              key={index}
+              key={note._id}
               className="note"
               style={{ backgroundColor: note.color }}
             >
-              <h3>{note.title}</h3>
-              <p>{note.body}</p>
-              <button onClick={() => editNote(index)}>Edit</button>
+              {editMode[index] ? (
+                <div>
+                  <input
+                    type="text"
+                    placeholder="New Title"
+                    value={form.title}
+                    onChange={(e) =>
+                      setForm({ ...form, title: e.target.value })
+                    }
+                  />
+                  <textarea
+                    placeholder="New Note"
+                    value={form.body}
+                    onChange={(e) =>
+                      setForm({ ...form, body: e.target.value })
+                    }
+                  />
+                  <button onClick={() => updateNote(index)}>Update</button>
+                </div>
+              ) : (
+                <>
+                  <h3>{note.title}</h3>
+                  <p>{note.body}</p>
+                </>
+              )}
+              <button onClick={() => toggleEditMode(index)}>
+                {editMode[index] ? "Cancel" : "Edit"}
+              </button>
             </div>
           ))}
         </div>
