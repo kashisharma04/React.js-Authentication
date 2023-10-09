@@ -2,7 +2,7 @@
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #c9bfbf;
+    background-color: #baaaaa;
   }
   
   .notes-container {
@@ -30,10 +30,12 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
-  
+  /* .all-notes{
+    color: black;
+  } */
   .new-note button {
     background-color: #4caf50;
-    color: white;
+    color: rgb(27, 6, 6);
     border: none;
     padding: 10px 20px;
     border-radius: 4px;
@@ -50,12 +52,13 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    color: black;
   }
   
   .note {
     width: 200px;
     min-height: 150px;
-    background-color: #ffffff;
+    background-color: #f5e5e5;
     padding: 15px;
     margin: 10px;
     border-radius: 8px;
