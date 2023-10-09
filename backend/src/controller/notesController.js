@@ -55,6 +55,27 @@ const updateNote = async function (req,res){
   }
 };
 
+const deleteNote = async function (req, res) {
+  try {
+    const { id } = req.params;
+    console.log("Deleting note with ID:", id); // Add this line for debugging
+
+    const existingNote = await noteModel.findById(id);
+
+    if (!existingNote) {
+      return res.status(404).send({ status: false, message: 'Note not found' });
+    }
+
+    await existingNote.remove();
+
+    return res.status(200).send({ status: true, message: 'Note deleted successfully' });
+  } catch (err) {
+    console.error("Error deleting note:", err); // Add this line for debugging
+    return res.status(500).send({ status: false, message: err.message });
+  }
+};
+
+
 module.exports = {
-  createNote, updateNote, getNote
+  createNote, updateNote, getNote, deleteNote
 };
